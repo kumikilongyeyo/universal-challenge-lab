@@ -85,3 +85,19 @@ try {
 } catch {
   $('status').textContent = 'offline';
 }
+
+function renderProviders(providers) {
+  const host = $('providerMatrix');
+  if (!host) return;
+  host.innerHTML = `<table><thead><tr><th>Provider</th><th>Status</th><th>Fixture</th></tr></thead><tbody>${providers.map((p) => `
+    <tr><td>${p.name}</td><td>${p.status}</td><td>${p.fixture ? `<a href="${p.fixture}">open</a>` : 'authorized sandbox required'}</td></tr>
+  `).join('')}</tbody></table>`;
+}
+
+try {
+  const providerData = await request('/api/providers');
+  renderProviders(providerData.providers);
+} catch {
+  const host = $('providerMatrix');
+  if (host) host.innerHTML = '<p class="hint">Provider matrix unavailable.</p>';
+}
