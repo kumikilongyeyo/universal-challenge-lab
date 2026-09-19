@@ -3,83 +3,128 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Universal Challenge Lab</title>
+  <title>Source Beast · Yomu</title>
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
   <main class="shell">
     <header class="hero">
       <div>
-        <p class="eyebrow">AUTHORIZED RESEARCH HARNESS</p>
-        <h1>Universal Challenge Lab</h1>
-        <p class="lede">Test adaptive challenge routing, fallback behavior, and official provider test modes without targeting production third-party sites.</p>
+        <p class="eyebrow">YOMU SOURCE BEAST</p>
+        <h1>Paste a site. Test it. Add it.</h1>
+        <p class="lede">Source Beast runs the Yomu gauntlet automatically. If the website asks for a human check, Beast opens the assisted browser, waits for you, then re-tests everything before Add Source unlocks.</p>
       </div>
-      <span class="status" id="status">connecting…</span>
+      <div class="status-stack">
+        <span class="status" id="status">connecting…</span>
+        <span class="status" id="beastStatus">Source Forge…</span>
+      </div>
     </header>
 
-    <section class="grid two">
-      <article class="panel controls">
-        <h2>Run experiment</h2>
-        <label>Challenge family
-          <select id="type">
-            <option value="random">Random mix</option>
-            <option value="text-transform">Text transform fixture</option>
-            <option value="semantic-grid">Semantic grid fixture</option>
-            <option value="slider-geometry">Slider geometry fixture</option>
-            <option value="proof-of-work">Proof of work fixture</option>
-          </select>
-        </label>
-        <label>Mutation intensity <span id="mutationValue">35%</span>
-          <input id="mutation" type="range" min="0" max="100" value="35" />
-        </label>
-        <label>Batch size
-          <input id="count" type="number" min="1" max="100" value="12" />
-        </label>
-        <div class="actions">
-          <button id="run">Run batch</button>
-          <button class="secondary" id="reset">Reset learning</button>
+    <section class="panel beast-panel">
+      <div class="panel-title beast-title">
+        <div>
+          <p class="eyebrow">ADD WEBSITE SOURCE</p>
+          <h2>Source Beast</h2>
         </div>
-      </article>
-
-      <article class="panel">
-        <h2>Latest result</h2>
-        <div class="metric-row">
-          <div><span>Success</span><strong id="successRate">—</strong></div>
-          <div><span>Avg. latency</span><strong id="latency">—</strong></div>
-          <div><span>Avg. attempts</span><strong id="attempts">—</strong></div>
-        </div>
-        <p class="hint" id="latestText">Run a batch to populate the lab.</p>
-      </article>
-    </section>
-
-    <section class="grid two">
-      <article class="panel">
-        <div class="panel-title"><h2>Adaptive policy</h2><span>EWMA learning</span></div>
-        <div id="policy" class="table-wrap"><p class="hint">No observations yet.</p></div>
-      </article>
-      <article class="panel">
-        <div class="panel-title"><h2>Recent attempts</h2><span>fallback trace</span></div>
-        <div id="history" class="attempt-list"><p class="hint">Nothing yet.</p></div>
-      </article>
-    </section>
-
-    <section class="panel provider">
-      <div>
-        <p class="eyebrow">REAL PROVIDER TEST MODES</p>
-        <h2>Browser integration fixtures</h2>
-        <p>These pages load documented provider test credentials on localhost. They exercise real widget integration without attacking production protections.</p>
+        <span>88+ gauntlet score required</span>
       </div>
-      <div class="provider-links">
-        <a href="/provider-tests/recaptcha.html">reCAPTCHA v2 test page →</a>
-        <a href="/provider-tests/turnstile.html">Turnstile test page →</a>
-        <a href="/provider-tests/hcaptcha.html">hCaptcha test page →</a>
+
+      <form id="sourceForm" class="source-form">
+        <input id="sourceUrl" type="url" inputmode="url" autocomplete="url" placeholder="https://example-manga-site.com" required />
+        <button id="testSource" type="submit">Test source</button>
+      </form>
+
+      <div class="beast-steps" aria-label="Source Beast progress">
+        <div class="beast-step" id="stepTest"><span>1</span><div><strong>Test</strong><small>Source + catalog</small></div></div>
+        <div class="beast-step" id="stepVerify"><span>2</span><div><strong>Verify</strong><small>Only if needed</small></div></div>
+        <div class="beast-step" id="stepGauntlet"><span>3</span><div><strong>Gauntlet</strong><small>Chapters + reader</small></div></div>
+        <div class="beast-step" id="stepAdd"><span>4</span><div><strong>Add</strong><small>Publish to Yomu</small></div></div>
+      </div>
+
+      <div id="beastResult" class="beast-result idle">
+        <div>
+          <strong id="beastHeadline">Ready when you are.</strong>
+          <p id="beastMessage">Paste a website URL above. Beast will only ask you to intervene when the site itself requires it.</p>
+        </div>
+        <div id="beastMeta" class="beast-meta"></div>
+      </div>
+
+      <div class="actions beast-actions">
+        <button id="openVerification" type="button" class="secondary hidden">Open verification</button>
+        <button id="verifyRetry" type="button" class="secondary hidden">Verify & retry</button>
+        <button id="addSource" type="button" class="hidden">Add source</button>
+        <a id="openYomu" class="button-link hidden" target="_blank" rel="noreferrer">Open in Yomu →</a>
       </div>
     </section>
 
-    <section class="panel">
-      <div class="panel-title"><h2>Provider readiness</h2><span>test-mode coverage</span></div>
-      <div id="providerMatrix" class="table-wrap"><p class="hint">Loading provider matrix…</p></div>
-    </section>
+    <details class="advanced" open>
+      <summary>Challenge Lab / advanced diagnostics</summary>
+      <div class="advanced-body">
+        <section class="grid two">
+          <article class="panel controls">
+            <h2>Run experiment</h2>
+            <label>Challenge family
+              <select id="type">
+                <option value="random">Random mix</option>
+                <option value="text-transform">Text transform fixture</option>
+                <option value="semantic-grid">Semantic grid fixture</option>
+                <option value="slider-geometry">Slider geometry fixture</option>
+                <option value="proof-of-work">Proof of work fixture</option>
+              </select>
+            </label>
+            <label>Mutation intensity <span id="mutationValue">35%</span>
+              <input id="mutation" type="range" min="0" max="100" value="35" />
+            </label>
+            <label>Batch size
+              <input id="count" type="number" min="1" max="100" value="12" />
+            </label>
+            <div class="actions">
+              <button id="run">Run batch</button>
+              <button class="secondary" id="reset">Reset learning</button>
+            </div>
+          </article>
+
+          <article class="panel">
+            <h2>Latest result</h2>
+            <div class="metric-row">
+              <div><span>Success</span><strong id="successRate">—</strong></div>
+              <div><span>Avg. latency</span><strong id="latency">—</strong></div>
+              <div><span>Avg. attempts</span><strong id="attempts">—</strong></div>
+            </div>
+            <p class="hint" id="latestText">Run a batch to populate the lab.</p>
+          </article>
+        </section>
+
+        <section class="grid two">
+          <article class="panel">
+            <div class="panel-title"><h2>Adaptive policy</h2><span>EWMA learning</span></div>
+            <div id="policy" class="table-wrap"><p class="hint">No observations yet.</p></div>
+          </article>
+          <article class="panel">
+            <div class="panel-title"><h2>Recent attempts</h2><span>fallback trace</span></div>
+            <div id="history" class="attempt-list"><p class="hint">Nothing yet.</p></div>
+          </article>
+        </section>
+
+        <section class="panel provider">
+          <div>
+            <p class="eyebrow">PROVIDER TEST MODES</p>
+            <h2>Browser integration fixtures</h2>
+            <p>Official/local test pages stay available for adapter development and regression testing.</p>
+          </div>
+          <div class="provider-links">
+            <a href="/provider-tests/recaptcha.html">reCAPTCHA v2 test page →</a>
+            <a href="/provider-tests/turnstile.html">Turnstile test page →</a>
+            <a href="/provider-tests/hcaptcha.html">hCaptcha test page →</a>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title"><h2>Provider readiness</h2><span>test-mode coverage</span></div>
+          <div id="providerMatrix" class="table-wrap"><p class="hint">Loading provider matrix…</p></div>
+        </section>
+      </div>
+    </details>
   </main>
   <script type="module" src="/app.js"></script>
 </body>
