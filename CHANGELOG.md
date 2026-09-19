@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.0 - 2026-09-19
+
+### Added
+
+- Source Beast paste → test → verify-if-needed → re-test → add workflow.
+- Bridge to Yomu Source Forge for real source preparation, assisted Chromium sessions, gauntlet scoring, publishing, and Yomu refresh.
+- Server-side Source Beast run state so generated descriptors and publish payloads do not live in the browser UI.
+- Human-verification handoff that automatically reruns the full Yomu gauntlet after verification succeeds.
+- Strict Add Source gate aligned with Source Forge's STRONG publish threshold (88+).
+- Source Beast dashboard with four visible stages: Test, Verify, Gauntlet, Add.
+- Unit coverage for direct pass, verification/retry, and weak-score lockout flows.
+
 ## 0.2.0 - 2026-09-19
 
 ### Added
