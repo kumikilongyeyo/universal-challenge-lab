@@ -39,3 +39,23 @@ export class HCaptchaTestObserver extends BrowserPipelineAdapter {
     return page.locator('.h-captcha').count().then((count) => count > 0);
   }
 }
+
+export class RecaptchaTestObserver extends BrowserPipelineAdapter {
+  constructor() { super({ id: 'recaptcha-test-observer', maxRounds: 1 }); }
+  async detect(page) {
+    const found = await page.locator('.g-recaptcha').count() > 0;
+    return { found, confidence: found ? 1 : 0 };
+  }
+  async extract(page) {
+    return page.locator('.g-recaptcha').evaluateAll((nodes) => nodes.map((node) => ({
+      sitekey: node.getAttribute('data-sitekey'),
+      callback: node.getAttribute('data-callback'),
+    })));
+  }
+  async act() {
+    return { attempted: false, mode: 'observe-only' };
+  }
+  async verify(page) {
+    return page.locator('.g-recaptcha').count().then((count) => count > 0);
+  }
+}
