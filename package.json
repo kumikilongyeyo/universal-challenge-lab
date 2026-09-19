@@ -1,0 +1,17 @@
+{
+  "name": "universal-challenge-lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Authorized anti-bot challenge testing lab with adaptive adapter routing.",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "test": "node --test",
+    "check": "node --check src/server.js && node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}
