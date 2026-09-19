@@ -1,55 +1,57 @@
 # Universal Challenge Lab
 
-A local, authorized research harness for studying challenge detection, adapter selection, fallback behavior, and test-provider integrations.
+A local, authorized research harness for studying challenge detection, adapter selection, fallback behavior, browser instrumentation, and official provider test integrations.
 
-> **Scope:** this project is deliberately restricted to local fixtures, official provider test credentials, and environments you own or are authorized to test. It is not a universal CAPTCHA bypasser and does not target production third-party sites.
+> **Scope:** local fixtures, provider-published test credentials, and environments you own or are authorized to test. This repository does not bundle production anti-bot bypass logic.
 
-## Goals
+## What is here
 
-- One adapter interface for many challenge *test* types.
-- Confidence-based routing instead of giant `if/else` chains.
-- Fallback when an adapter fails validation.
-- Lightweight policy learning from previous runs.
-- Repeatable mutation/batch testing.
-- Browser-facing dashboard for inspecting runs.
-- Official test-mode pages for Cloudflare Turnstile and hCaptcha.
+- Confidence-based adapter registry and adaptive fallback strategy.
+- EWMA learning from verified success/failure outcomes.
+- Local text, semantic-grid, slider-geometry, and SHA-256 proof-of-work fixtures.
+- Playwright-based `AuthorizedBrowserRunner` with a target-policy check **before** Chromium launches.
+- Reusable browser lifecycle: `detect -> extract -> act -> verify -> retry`.
+- Official test fixtures for Google reCAPTCHA v2, hCaptcha, and Cloudflare Turnstile.
+- Provider readiness catalog for AWS WAF, DataDome, HUMAN/PerimeterX, and Akamai owned-sandbox work.
+- Dashboard, run history, provider matrix, unit tests, and GitHub Actions browser smoke tests.
 
 ## Quick start
 
 ```bash
+npm install
+npx playwright install chromium
 npm start
 # open http://127.0.0.1:4173
 ```
 
-Run the test suite:
+Run unit tests:
 
 ```bash
 npm test
 ```
 
-## Safety model
+Inspect an authorized local page in Chromium:
 
-The server binds to loopback by default and refuses arbitrary remote targets. Provider integrations use documented test keys only. Any future real-provider adapter should be implemented for a staging system you control and must preserve the target policy in `src/core/target-policy.js`.
-
-## Architecture
-
-```text
-fixture/provider test
-        |
-        v
-  challenge descriptor
-        |
-        v
- adapter registry -----> confidence scores
-        |                     |
-        +----------> adaptive orchestrator
-                            |
-                 attempt -> validate -> learn
-                            |
-                            v
-                       run history
+```bash
+npm run browser:inspect -- http://127.0.0.1:4173/provider-tests/turnstile.html
 ```
 
-## Current milestone
+## Provider readiness
 
-`v0.1` focuses on the orchestration skeleton and deterministic local fixtures. Provider test pages are intentionally integration tests, not production solvers.
+| Provider | Current lab support |
+|---|---|
+| Google reCAPTCHA v2 | Official automated-test fixture + observer |
+| hCaptcha | Official integration-test fixture + observer |
+| Cloudflare Turnstile | Official pass/fail/forced-interactive fixtures + observer |
+| AWS WAF | Adapter slot; requires an AWS staging system you control |
+| DataDome | Adapter slot; requires authorized sandbox/staging |
+| HUMAN / PerimeterX | Adapter slot; requires authorized sandbox/staging |
+| Akamai Bot Manager | Adapter slot; requires authorized sandbox/staging |
+
+## Upstream research
+
+The lab studies open-source solver projects for architecture patterns. See `docs/UPSTREAM.md`. We reimplemented the useful orchestration ideas behind a strict target gate rather than vendoring live bypass/token-injection code.
+
+## Safety model
+
+The server binds to loopback by default. `AuthorizedBrowserRunner` accepts loopback and `.test` hosts only. Provider pages use published test keys. Production credentials should never be committed.
