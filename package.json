@@ -1,9 +1,9 @@
 {
   "name": "universal-challenge-lab",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
-  "description": "Authorized anti-bot challenge testing lab with adaptive adapter routing.",
+  "description": "Source Beast orchestration plus authorized challenge-lab testing for Yomu.",
   "scripts": {
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
