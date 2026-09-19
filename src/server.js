@@ -11,6 +11,7 @@ import { gridAdapter } from './adapters/grid-adapter.js';
 import { sliderAdapter } from './adapters/slider-adapter.js';
 import { powAdapter } from './adapters/pow-adapter.js';
 import { fallbackAdapter } from './adapters/fallback-adapter.js';
+import { providerCatalog } from './integrations/provider-catalog.js';
 
 const ROOT = join(fileURLToPath(new URL('..', import.meta.url)), '..');
 const PUBLIC = join(ROOT, 'public');
@@ -72,10 +73,14 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || `${HOST}:${PORT}`}`);
 
   try {
+    if (req.method === 'GET' && url.pathname === '/api/providers') {
+      return json(res, 200, { providers: providerCatalog });
+    }
+
     if (req.method === 'GET' && url.pathname === '/api/status') {
       return json(res, 200, {
         name: 'Universal Challenge Lab',
-        version: '0.1.0',
+        version: '0.2.0',
         mode: 'authorized-local-lab',
         adapters: registry.list().map((a) => a.id),
         historyCount: history.length,
