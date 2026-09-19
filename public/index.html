@@ -3,23 +3,28 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Universal Challenge Lab</title>
+  <meta name="description" content="Universal Challenge Lab — authorized adaptive challenge-routing research harness." />
+  <title>Universal Challenge Lab · Live</title>
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
   <main class="shell">
     <header class="hero">
       <div>
-        <p class="eyebrow">AUTHORIZED RESEARCH HARNESS</p>
+        <p class="eyebrow">LIVE · AUTHORIZED RESEARCH HARNESS</p>
         <h1>Universal Challenge Lab</h1>
-        <p class="lede">Test adaptive challenge routing, fallback behavior, and official provider test modes without targeting production third-party sites.</p>
+        <p class="lede">A browser-hosted research environment for adaptive challenge routing, fallback behavior, mutation testing, and official provider test fixtures. It does not target production third-party protections.</p>
       </div>
-      <span class="status" id="status">connecting…</span>
+      <span class="status" id="status">booting…</span>
     </header>
+
+    <section class="notice">
+      <strong>Live mode:</strong> experiments execute in your browser and learning state is stored locally on this device. Provider pages use official test credentials only.
+    </section>
 
     <section class="grid two">
       <article class="panel controls">
-        <h2>Run experiment</h2>
+        <div class="panel-title"><h2>Run experiment</h2><span>adaptive router</span></div>
         <label>Challenge family
           <select id="type">
             <option value="random">Random mix</option>
@@ -33,7 +38,7 @@
           <input id="mutation" type="range" min="0" max="100" value="35" />
         </label>
         <label>Batch size
-          <input id="count" type="number" min="1" max="100" value="12" />
+          <input id="count" type="number" min="1" max="30" value="12" />
         </label>
         <div class="actions">
           <button id="run">Run batch</button>
@@ -42,7 +47,7 @@
       </article>
 
       <article class="panel">
-        <h2>Latest result</h2>
+        <div class="panel-title"><h2>Latest result</h2><span>current browser</span></div>
         <div class="metric-row">
           <div><span>Success</span><strong id="successRate">—</strong></div>
           <div><span>Avg. latency</span><strong id="latency">—</strong></div>
@@ -67,7 +72,7 @@
       <div>
         <p class="eyebrow">REAL PROVIDER TEST MODES</p>
         <h2>Browser integration fixtures</h2>
-        <p>These pages load documented provider test credentials on localhost. They exercise real widget integration without attacking production protections.</p>
+        <p>These pages load documented provider testing credentials on this live deployment. They exercise rendering, callbacks, integration behavior, and manual challenge flows without attacking production protections.</p>
       </div>
       <div class="provider-links">
         <a href="/provider-tests/recaptcha.html">reCAPTCHA v2 test page →</a>
@@ -78,8 +83,10 @@
 
     <section class="panel">
       <div class="panel-title"><h2>Provider readiness</h2><span>test-mode coverage</span></div>
-      <div id="providerMatrix" class="table-wrap"><p class="hint">Loading provider matrix…</p></div>
+      <div id="providerMatrix" class="table-wrap"></div>
     </section>
+
+    <footer class="footer">Universal Challenge Lab · live research build · production third-party targets are out of scope</footer>
   </main>
   <script type="module" src="/app.js"></script>
 </body>
