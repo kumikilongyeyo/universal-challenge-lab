@@ -1,45 +1,8 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Turnstile Official Test Fixtures</title>
-  <style>
-    body{font:16px/1.5 system-ui;margin:0;background:#0c0f14;color:#eef2f7}.wrap{max-width:900px;margin:50px auto;padding:24px}.card{background:#151a22;border:1px solid #293240;border-radius:18px;padding:22px;margin:16px 0}code{background:#0a0d12;padding:2px 6px;border-radius:6px}.ok{color:#6ee7b7}.warn{color:#fbbf24}a{color:#9fb6ff}.result{min-height:24px;margin-top:12px;color:#aeb8c8}</style>
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-</head>
-<body>
-  <main class="wrap">
-    <a href="/">← Lab dashboard</a>
-    <h1>Cloudflare Turnstile — official test fixtures</h1>
-    <p>Only Cloudflare-published dummy sitekeys are used here. These fixtures are for browser integration and regression testing, not production bypass.</p>
-
-    <section class="card">
-      <h2 class="ok">Always-pass visible</h2>
-      <p><code>1x00000000000000000000AA</code></p>
-      <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-callback="turnstilePass"></div>
-      <div id="pass-result" class="result">Waiting for widget…</div>
-    </section>
-
-    <section class="card">
-      <h2>Always-fail visible</h2>
-      <p><code>2x00000000000000000000AB</code></p>
-      <div class="cf-turnstile" data-sitekey="2x00000000000000000000AB" data-error-callback="turnstileFail"></div>
-      <div id="fail-result" class="result">Waiting for widget…</div>
-    </section>
-
-    <section class="card">
-      <h2 class="warn">Forced interactive</h2>
-      <p><code>3x00000000000000000000FF</code></p>
-      <p>This fixture is intentionally observation/manual-interaction only. The lab does not automate solving the interactive production-style challenge.</p>
-      <div class="cf-turnstile" data-sitekey="3x00000000000000000000FF" data-callback="turnstileInteractive"></div>
-      <div id="interactive-result" class="result">Waiting for interaction…</div>
-    </section>
-  </main>
-  <script>
-    function turnstilePass(token){document.getElementById('pass-result').textContent='Callback fired with official dummy token: '+token.slice(0,28)+'…';}
-    function turnstileFail(){document.getElementById('fail-result').textContent='Expected failure callback observed.';}
-    function turnstileInteractive(){document.getElementById('interactive-result').textContent='Interactive test challenge completed manually.';}
-  </script>
-</body>
-</html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Turnstile Test Fixture · UCL</title><link rel="stylesheet" href="/styles.css"><script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script></head>
+<body><main class="fixture-shell"><section class="panel"><p class="eyebrow">CLOUDFLARE · OFFICIAL TEST CREDENTIALS</p><h1 style="font-size:3rem">Turnstile test fixture</h1><p class="lede">This live page uses Cloudflare's documented dummy sitekeys. Always-pass mode is deterministic; forced-interactive mode exists for manual integration testing.</p><div class="actions" style="margin:24px 0"><button id="pass">Always-pass mode</button><button id="interactive" class="secondary">Forced interactive mode</button></div><div id="widget" class="fixture-box"></div><pre id="result" class="result">Waiting for widget…</pre><p class="hint">The lab does not automate the forced interactive challenge. This page tests widget rendering, callbacks, and human-completion flow with Cloudflare's official test mode.</p><a class="back" href="/">← Back to dashboard</a></section></main>
+<script>
+const keys={pass:'1x00000000000000000000AA',interactive:'3x00000000000000000000FF'};let widgetId=null;
+function render(mode){if(!window.turnstile)return setTimeout(()=>render(mode),100);if(widgetId!==null)window.turnstile.remove(widgetId);document.querySelector('#result').textContent=`Mode: ${mode}\nWaiting for callback…`;widgetId=window.turnstile.render('#widget',{sitekey:keys[mode],callback(token){document.querySelector('#result').textContent=`Mode: ${mode}\nToken received: ${token.slice(0,36)}…\nLength: ${token.length}`},'error-callback'(code){document.querySelector('#result').textContent=`Widget error: ${code}`}})}
+document.querySelector('#pass').onclick=()=>render('pass');document.querySelector('#interactive').onclick=()=>render('interactive');window.addEventListener('load',()=>render('pass'));
+</script></body></html>

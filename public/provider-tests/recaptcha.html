@@ -1,26 +1,4 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>reCAPTCHA v2 Official Test Fixture</title>
-  <style>
-    body{font:16px/1.5 system-ui;margin:0;background:#0c0f14;color:#eef2f7}.wrap{max-width:760px;margin:50px auto;padding:24px}.card{background:#151a22;border:1px solid #293240;border-radius:18px;padding:22px;margin:16px 0}code{background:#0a0d12;padding:2px 6px;border-radius:6px}a{color:#9fb6ff}.result{min-height:24px;margin-top:12px;color:#aeb8c8}</style>
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-</head>
-<body>
-  <main class="wrap">
-    <a href="/">← Lab dashboard</a>
-    <h1>Google reCAPTCHA v2 — official test fixture</h1>
-    <p>This page uses Google's published v2 automated-test sitekey, which always produces the no-CAPTCHA test behavior and is not a production credential.</p>
-    <section class="card">
-      <p><code>6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI</code></p>
-      <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-callback="recaptchaPass"></div>
-      <div id="result" class="result">Waiting for widget…</div>
-    </section>
-  </main>
-  <script>
-    function recaptchaPass(token){document.getElementById('result').textContent='Official test callback fired: '+token.slice(0,32)+'…';}
-  </script>
-</body>
-</html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>reCAPTCHA Test Fixture · UCL</title><link rel="stylesheet" href="/styles.css"><script src="https://www.google.com/recaptcha/api.js" async defer></script></head>
+<body><main class="fixture-shell"><section class="panel"><p class="eyebrow">GOOGLE RECAPTCHA V2 · TEST KEY</p><h1 style="font-size:3rem">reCAPTCHA test fixture</h1><p class="lede">This live page uses Google's published reCAPTCHA v2 test sitekey. It is for deterministic integration testing and is not a production-protection target.</p><div class="fixture-box"><div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-callback="onSolved" data-error-callback="onError"></div></div><pre id="result" class="result">Waiting for test widget…</pre><p class="hint">The widget is intentionally Google's documented testing configuration. The lab only observes the callback and rendering behavior.</p><a class="back" href="/">← Back to dashboard</a></section></main>
+<script>function onSolved(token){document.querySelector('#result').textContent=`Test callback received.\nToken: ${token.slice(0,36)}…\nLength: ${token.length}`}function onError(){document.querySelector('#result').textContent='Widget reported an error.'}</script></body></html>

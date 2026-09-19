@@ -1,26 +1,4 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>hCaptcha Official Test Fixture</title>
-  <style>
-    body{font:16px/1.5 system-ui;margin:0;background:#0c0f14;color:#eef2f7}.wrap{max-width:760px;margin:50px auto;padding:24px}.card{background:#151a22;border:1px solid #293240;border-radius:18px;padding:22px;margin:16px 0}code{background:#0a0d12;padding:2px 6px;border-radius:6px}a{color:#9fb6ff}.result{min-height:24px;margin-top:12px;color:#aeb8c8}</style>
-  <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
-</head>
-<body>
-  <main class="wrap">
-    <a href="/">← Lab dashboard</a>
-    <h1>hCaptcha — official integration test fixture</h1>
-    <p>The sitekey below is hCaptcha's published always-pass integration-test key. It provides no anti-bot protection and is intentionally limited to this test page.</p>
-    <section class="card">
-      <p><code>10000000-ffff-ffff-ffff-000000000001</code></p>
-      <div class="h-captcha" data-sitekey="10000000-ffff-ffff-ffff-000000000001" data-callback="hcaptchaPass"></div>
-      <div id="result" class="result">Waiting for widget…</div>
-    </section>
-  </main>
-  <script>
-    function hcaptchaPass(token){document.getElementById('result').textContent='Official test callback fired: '+token;}
-  </script>
-</body>
-</html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>hCaptcha Test Fixture · UCL</title><link rel="stylesheet" href="/styles.css"><script src="https://js.hcaptcha.com/1/api.js" async defer></script></head>
+<body><main class="fixture-shell"><section class="panel"><p class="eyebrow">HCAPTCHA · OFFICIAL TEST CREDENTIALS</p><h1 style="font-size:3rem">hCaptcha test fixture</h1><p class="lede">This live page uses hCaptcha's published integration-test sitekey. It is intended for predictable integration testing rather than production abuse-prevention testing.</p><div class="fixture-box"><div class="h-captcha" data-sitekey="10000000-ffff-ffff-ffff-000000000001" data-callback="onSolved" data-error-callback="onError"></div></div><pre id="result" class="result">Waiting for test widget…</pre><p class="hint">This fixture checks rendering and callback behavior using hCaptcha's own test configuration. It does not target a third-party protected site.</p><a class="back" href="/">← Back to dashboard</a></section></main>
+<script>function onSolved(token){document.querySelector('#result').textContent=`Test callback received.\nToken: ${token.slice(0,36)}…\nLength: ${token.length}`}function onError(code){document.querySelector('#result').textContent=`Widget error: ${code}`}</script></body></html>
