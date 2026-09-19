@@ -19,6 +19,9 @@ const ROOT = join(fileURLToPath(new URL('..', import.meta.url)), '..');
 const PUBLIC = join(ROOT, 'public');
 const PORT = Number(process.env.PORT || 4173);
 const HOST = process.env.HOST || '127.0.0.1';
+const configuredOrigins = String(
+  process.env.SOURCE_BEAST_ALLOWED_ORIGINS || 'https://yomu.yomuread.workers.dev',
+).split(',').map((value) => value.trim()).filter(Boolean);
 
 const registry = new AdapterRegistry()
   .register(textAdapter)
@@ -32,6 +35,30 @@ const orchestrator = new AdaptiveOrchestrator({ registry, policy });
 const forgeBridge = new SourceForgeBridge();
 const sourceBeast = new SourceBeastWorkflow({ bridge: forgeBridge });
 const history = [];
+
+function originAllowed(origin) {
+  if (!origin) return true;
+  if (configuredOrigins.includes(origin)) return true;
+  try {
+    const parsed = new URL(origin);
+    return ['localhost', '127.0.0.1'].includes(parsed.hostname) && ['http:', 'https:'].includes(parsed.protocol);
+  } catch {
+    return false;
+  }
+}
+
+function applyCors(req, res) {
+  const origin = req.headers.origin;
+  if (origin && originAllowed(origin)) {
+    res.setHeader('access-control-allow-origin', origin);
+  }
+  res.setHeader('vary', 'Origin');
+  res.setHeader('access-control-allow-headers', 'content-type');
+  res.setHeader('access-control-allow-methods', 'GET,POST,OPTIONS');
+  if (String(req.headers['access-control-request-private-network'] || '').toLowerCase() === 'true') {
+    res.setHeader('access-control-allow-private-network', 'true');
+  }
+}
 
 function json(res, status, payload) {
   res.writeHead(status, {
@@ -81,6 +108,22 @@ function sourceBeastRunId(pathname, suffix = '') {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || `${HOST}:${PORT}`}`);
+  applyCors(req, res);
+
+  if (req.method === 'OPTIONS') {
+    if (!originAllowed(req.headers.origin)) {
+      res.writeHead(403);
+      res.end();
+      return;
+    }
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+
+  if (req.headers.origin && !originAllowed(req.headers.origin) && url.pathname.startsWith('/api/')) {
+    return json(res, 403, { error: 'Origin not allowed by local Source Beast.' });
+  }
 
   try {
     if (req.method === 'GET' && url.pathname === '/api/providers') {
@@ -90,7 +133,7 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'GET' && url.pathname === '/api/status') {
       return json(res, 200, {
         name: 'Universal Challenge Lab',
-        version: '0.3.0',
+        version: '0.3.1',
         mode: 'authorized-local-lab',
         adapters: registry.list().map((a) => a.id),
         historyCount: history.length,
@@ -105,6 +148,7 @@ const server = http.createServer(async (req, res) => {
           ok: true,
           service: 'source-beast',
           readyScore: sourceBeast.readyScore,
+          allowedOrigins: configuredOrigins,
           forge: { connected: true, service: forge.service, version: forge.version },
         });
       } catch (error) {
@@ -112,6 +156,7 @@ const server = http.createServer(async (req, res) => {
           ok: false,
           service: 'source-beast',
           readyScore: sourceBeast.readyScore,
+          allowedOrigins: configuredOrigins,
           forge: { connected: false, error: error.message },
         });
       }
@@ -207,4 +252,5 @@ function summarize(runs) {
 server.listen(PORT, HOST, () => {
   console.log(`Universal Challenge Lab + Source Beast running at http://${HOST}:${PORT}`);
   console.log('Source Beast delegates site forging, assisted verification and publishing to local Yomu Source Forge.');
+  console.log(`Yomu web origins: ${configuredOrigins.join(', ')}`);
 });
