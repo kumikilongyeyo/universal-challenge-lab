@@ -12,6 +12,8 @@ import { sliderAdapter } from './adapters/slider-adapter.js';
 import { powAdapter } from './adapters/pow-adapter.js';
 import { fallbackAdapter } from './adapters/fallback-adapter.js';
 import { providerCatalog } from './integrations/provider-catalog.js';
+import { SourceForgeBridge } from './source-beast/forge-bridge.js';
+import { SourceBeastWorkflow } from './source-beast/workflow.js';
 
 const ROOT = join(fileURLToPath(new URL('..', import.meta.url)), '..');
 const PUBLIC = join(ROOT, 'public');
@@ -27,6 +29,8 @@ const registry = new AdapterRegistry()
 
 const policy = new PolicyStore();
 const orchestrator = new AdaptiveOrchestrator({ registry, policy });
+const forgeBridge = new SourceForgeBridge();
+const sourceBeast = new SourceBeastWorkflow({ bridge: forgeBridge });
 const history = [];
 
 function json(res, status, payload) {
@@ -69,6 +73,12 @@ async function serveStatic(req, res, pathname) {
   }
 }
 
+function sourceBeastRunId(pathname, suffix = '') {
+  const escaped = suffix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = pathname.match(new RegExp(`^/api/source-beast/runs/([^/]+)${escaped}$`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || `${HOST}:${PORT}`}`);
 
@@ -80,11 +90,60 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'GET' && url.pathname === '/api/status') {
       return json(res, 200, {
         name: 'Universal Challenge Lab',
-        version: '0.2.0',
+        version: '0.3.0',
         mode: 'authorized-local-lab',
         adapters: registry.list().map((a) => a.id),
         historyCount: history.length,
+        sourceBeast: true,
       });
+    }
+
+    if (req.method === 'GET' && url.pathname === '/api/source-beast/status') {
+      try {
+        const forge = await forgeBridge.health();
+        return json(res, 200, {
+          ok: true,
+          service: 'source-beast',
+          readyScore: sourceBeast.readyScore,
+          forge: { connected: true, service: forge.service, version: forge.version },
+        });
+      } catch (error) {
+        return json(res, 200, {
+          ok: false,
+          service: 'source-beast',
+          readyScore: sourceBeast.readyScore,
+          forge: { connected: false, error: error.message },
+        });
+      }
+    }
+
+    if (req.method === 'GET' && url.pathname === '/api/source-beast/runs') {
+      return json(res, 200, { runs: sourceBeast.list() });
+    }
+
+    if (req.method === 'POST' && url.pathname === '/api/source-beast/test') {
+      const input = await body(req);
+      return json(res, 200, await sourceBeast.test(input.url));
+    }
+
+    const runId = sourceBeastRunId(url.pathname);
+    if (req.method === 'GET' && runId) {
+      return json(res, 200, sourceBeast.get(runId));
+    }
+
+    const openVerificationId = sourceBeastRunId(url.pathname, '/verification/open');
+    if (req.method === 'POST' && openVerificationId) {
+      return json(res, 200, await sourceBeast.openVerification(openVerificationId));
+    }
+
+    const checkVerificationId = sourceBeastRunId(url.pathname, '/verification/check');
+    if (req.method === 'POST' && checkVerificationId) {
+      return json(res, 200, await sourceBeast.verifyAndRetest(checkVerificationId));
+    }
+
+    const addId = sourceBeastRunId(url.pathname, '/add');
+    if (req.method === 'POST' && addId) {
+      return json(res, 200, await sourceBeast.add(addId));
     }
 
     if (req.method === 'POST' && url.pathname === '/api/run') {
@@ -146,6 +205,6 @@ function summarize(runs) {
 }
 
 server.listen(PORT, HOST, () => {
-  console.log(`Universal Challenge Lab running at http://${HOST}:${PORT}`);
-  console.log('Scope: local fixtures and official provider test modes only.');
+  console.log(`Universal Challenge Lab + Source Beast running at http://${HOST}:${PORT}`);
+  console.log('Source Beast delegates site forging, assisted verification and publishing to local Yomu Source Forge.');
 });
