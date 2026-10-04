@@ -1,0 +1,12 @@
+{
+  "name": "asset-optimizer-hosted",
+  "version": "3.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "busboy": "^1.6.0",
+    "fflate": "^0.8.2",
+    "sharp": "^0.35.5"
+  }
+}
